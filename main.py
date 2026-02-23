@@ -3,12 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.config import settings
+from src.etl.extract import load_all_raw_data
 
 
 def _has_raw_files(raw_dir: Path) -> bool:
     if not raw_dir.exists():
         return False
-    files = [p for p in raw_dir.iterdir() if p.is_file() and p.name.lower() != "readme.md"]
+    files = [
+        p for p in raw_dir.iterdir()
+        if p.is_file() and p.name.lower() != "readme.md"
+    ]
     return len(files) > 0
 
 
@@ -25,13 +29,14 @@ def main() -> None:
     if not _has_raw_files(raw_dir):
         print(
             "\n[action] No raw data files found.\n"
-            "1) Put your dataset file(s) inside 'data/raw/' (e.g., transactions.csv)\n"
+            "1) Put your dataset file(s) inside 'data/raw/'\n"
             "2) Re-run: python main.py\n"
         )
         return
 
-    # Next step: ETL pipeline entrypoint (we will implement this in src/etl)
-    print("\n[next] Raw data found. ETL pipeline will run here (to be implemented).")
+    print("\n[etl] Starting extraction...")
+    data = load_all_raw_data()
+    print(f"[etl] Loaded datasets: {list(data.keys())}")
 
 
 if __name__ == "__main__":
