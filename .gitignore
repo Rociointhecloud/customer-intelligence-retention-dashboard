@@ -215,3 +215,6 @@ __marimo__/
 # Model artifacts (optional, decide later if committing model)
 *.joblib
 *.pkl
+
+# Raw datasets
+data/raw/*.csv
