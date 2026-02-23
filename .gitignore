@@ -218,3 +218,6 @@ __marimo__/
 
 # Raw datasets
 data/raw/*.csv
+
+# Processed datasets
+data/processed/*.csv
