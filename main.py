@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.analysis.segmentation import assign_rfm_segments
 from src.config import settings
 from src.etl.extract import load_all_raw_data
 from src.etl.transform import build_transaction_table
+from src.modeling.features import build_customer_features
 
 
 def _has_raw_files(raw_dir: Path) -> bool:
@@ -46,6 +48,26 @@ def main() -> None:
     out_path = processed_dir / "transactions.csv"
     transactions.to_csv(out_path, index=False)
     print(f"[etl] Saved processed transactions to: {out_path}")
+
+    print("\n[model] Building customer features...")
+    customer_features = build_customer_features(
+        transactions,
+        churn_window_days=settings.default_churn_window_days,
+    )
+
+    features_path = processed_dir / "customer_features.csv"
+    customer_features.to_csv(features_path, index=False)
+    print(f"[model] Customer features shape: {customer_features.shape}")
+    print(f"[model] Saved to: {features_path}")
+
+    print("\n[analysis] Assigning RFM segments...")
+    segmented = assign_rfm_segments(customer_features)
+
+    segments_path = processed_dir / "customer_segments.csv"
+    segmented.to_csv(segments_path, index=False)
+
+    print(f"[analysis] Segmented dataset shape: {segmented.shape}")
+    print(f"[analysis] Saved to: {segments_path}")
 
 
 if __name__ == "__main__":
