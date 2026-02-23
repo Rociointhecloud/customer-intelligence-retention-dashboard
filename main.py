@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src.config import settings
 from src.etl.extract import load_all_raw_data
+from src.etl.transform import build_transaction_table
 
 
 def _has_raw_files(raw_dir: Path) -> bool:
@@ -37,6 +38,14 @@ def main() -> None:
     print("\n[etl] Starting extraction...")
     data = load_all_raw_data()
     print(f"[etl] Loaded datasets: {list(data.keys())}")
+
+    print("\n[etl] Building transaction table...")
+    transactions = build_transaction_table(data)
+    print(f"[etl] Transaction table shape: {transactions.shape}")
+
+    out_path = processed_dir / "transactions.csv"
+    transactions.to_csv(out_path, index=False)
+    print(f"[etl] Saved processed transactions to: {out_path}")
 
 
 if __name__ == "__main__":
