@@ -10,7 +10,7 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
     payments = data["payments"]
     reviews = data["reviews"]
 
-    # --- Schema validation (fail fast) ---
+    # --- Schema validation ---
     require_columns(
         orders,
         [
@@ -18,6 +18,7 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
             "customer_id",
             "order_purchase_timestamp",
             "order_delivered_customer_date",
+            "order_status",
         ],
         "orders",
     )
@@ -26,8 +27,9 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
     require_columns(payments, ["order_id", "payment_value"], "payments")
     require_columns(reviews, ["order_id", "review_score"], "reviews")
 
-    # --- Dates ---
     orders = orders.copy()
+
+    # --- Convert date columns ---
     orders["order_purchase_timestamp"] = pd.to_datetime(
         orders["order_purchase_timestamp"], errors="coerce"
     )
@@ -35,7 +37,7 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
         orders["order_delivered_customer_date"], errors="coerce"
     )
 
-    # --- Aggregate order_items to order level ---
+    # --- Aggregate order_items ---
     order_items_agg = (
         order_items.groupby("order_id", as_index=False)
         .agg(
@@ -44,7 +46,7 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
         )
     )
 
-    # --- Aggregate payments to order level ---
+    # --- Aggregate payments ---
     payments_agg = (
         payments.groupby("order_id", as_index=False)
         .agg(
@@ -52,13 +54,14 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
         )
     )
 
-    # --- Keep only needed review columns (order-level) ---
-    reviews_small = reviews[["order_id", "review_score"]].copy()
-
     # --- Merge datasets ---
     df = orders.merge(order_items_agg, on="order_id", how="left")
     df = df.merge(payments_agg, on="order_id", how="left")
-    df = df.merge(reviews_small, on="order_id", how="left")
+    df = df.merge(
+        reviews[["order_id", "review_score"]],
+        on="order_id",
+        how="left",
+    )
     df = df.merge(
         customers[["customer_id", "customer_unique_id"]],
         on="customer_id",
@@ -69,5 +72,18 @@ def build_transaction_table(data: dict) -> pd.DataFrame:
     df["delivery_days"] = (
         df["order_delivered_customer_date"] - df["order_purchase_timestamp"]
     ).dt.days
+
+    # ===============================
+    # CLEANING STEP
+    # ===============================
+
+    # Keep only delivered orders
+    df = df[df["order_status"] == "delivered"].copy()
+
+    # Remove rows without revenue
+    df = df[df["revenue"].notna()].copy()
+
+    # Ensure one row per order
+    df = df.drop_duplicates(subset=["order_id"])
 
     return df
