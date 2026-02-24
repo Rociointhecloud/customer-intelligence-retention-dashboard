@@ -3,6 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.analysis.segmentation import assign_rfm_segments
+from src.analysis.visualization import (
+    plot_churn_rate_by_segment,
+    plot_revenue_by_segment,
+    plot_segment_distribution,
+)
 from src.config import settings
 from src.etl.extract import load_all_raw_data
 from src.etl.transform import build_transaction_table
@@ -65,9 +70,13 @@ def main() -> None:
 
     segments_path = processed_dir / "customer_segments.csv"
     segmented.to_csv(segments_path, index=False)
-
     print(f"[analysis] Segmented dataset shape: {segmented.shape}")
     print(f"[analysis] Saved to: {segments_path}")
+
+    print("\n[analysis] Visualizing segments...")
+    plot_segment_distribution(segmented)
+    plot_revenue_by_segment(segmented)
+    plot_churn_rate_by_segment(segmented)
 
 
 if __name__ == "__main__":

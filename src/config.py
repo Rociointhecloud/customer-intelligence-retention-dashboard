@@ -30,7 +30,7 @@ class Settings:
 
     # App
     app_title: str = _env("APP_TITLE", "Customer Intelligence Dashboard")
-    default_churn_window_days: int = int(_env("DEFAULT_CHURN_WINDOW_DAYS", "90"))
+    default_churn_window_days: int = int(_env("DEFAULT_CHURN_WINDOW_DAYS", "180"))
 
     # Reproducibility
     random_seed: int = int(_env("RANDOM_SEED", "42"))
