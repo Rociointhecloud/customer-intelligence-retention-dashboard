@@ -213,7 +213,7 @@ __marimo__/
 .streamlit/
 
 # Model artifacts (optional, decide later if committing model)
-*.joblib
+# *.joblib
 *.pkl
 
 # Raw datasets
