@@ -225,3 +225,7 @@ data/processed/*.csv
 # Allow Streamlit theme config
 !.streamlit/
 !.streamlit/config.toml
+
+# Allow small demo datasets for Streamlit Cloud
+!data/demo/
+!data/demo/*.csv
