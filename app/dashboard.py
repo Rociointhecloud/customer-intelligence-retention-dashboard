@@ -298,37 +298,97 @@ This dashboard answers 3 business questions:
         st.subheader("Churn risk prediction (interactive)")
 
         st.write(
-            "This is a **risk score** (0–100%). "
-            "It helps prioritize outreach. It is not a guarantee."
+            "This is a **risk score (0–100%)** to prioritize outreach. "
+            "It supports decisions, it is not a guarantee."
         )
 
         try:
             segments_scored = segments_filtered.copy()
+
+            # 1) Predict probability (0–1)
             segments_scored["churn_probability"] = predict_churn_proba(segments_scored)
 
-            avg_risk = float(segments_scored["churn_probability"].mean() * 100)
-            label, emoji = risk_label(avg_risk / 100)
-
-            c1, c2 = st.columns(2)
-            c1.metric("Average churn risk", pct(avg_risk))
-            c2.metric("Risk level", f"{emoji} {label}")
+            # 2) Convert to percentage for UX
+            segments_scored["churn_probability_pct"] = (
+                segments_scored["churn_probability"] * 100
+            ).clip(0, 100)
 
             st.divider()
 
+            st.markdown("### Decision controls")
+
+            cA, cB = st.columns([1, 1])
+            with cA:
+                threshold = st.slider(
+                    "Risk threshold (%)",
+                    min_value=10,
+                    max_value=95,
+                    value=60,
+                    step=5,
+                    help="Customers above this threshold will be flagged as high-risk.",
+                )
+            with cB:
+                uplift_rate = st.slider(
+                    "Expected win-back rate (%)",
+                    min_value=1,
+                    max_value=25,
+                    value=5,
+                    step=1,
+                    help="Simple scenario: re-activate X% of high-risk customers.",
+                )
+
+            high_risk = segments_scored[
+                segments_scored["churn_probability_pct"] >= threshold
+            ].copy()
+
+            st.markdown("### Opportunity sizing")
+
+            total_customers_scored = int(segments_scored.shape[0])
+            high_risk_customers = int(high_risk.shape[0])
+
+            total_revenue_scored = float(segments_scored["monetary_total"].sum())
+            revenue_at_risk = float(high_risk["monetary_total"].sum())
+            revenue_at_risk_share = (
+                (revenue_at_risk / total_revenue_scored) * 100
+                if total_revenue_scored > 0
+                else 0.0
+            )
+
+            projected_uplift = revenue_at_risk * (uplift_rate / 100)
+            avg_risk = float(segments_scored["churn_probability_pct"].mean())
+
+            k1, k2, k3, k4 = st.columns(4)
+            k1.metric("Average churn risk", f"{avg_risk:.1f}%")
+            k2.metric("High-risk customers", f"{high_risk_customers:,} / {total_customers_scored:,}")
+            k3.metric("Revenue at risk", money(revenue_at_risk))
+            k4.metric("Projected uplift", money(projected_uplift))
+
+            st.caption(f"Revenue at risk share: **{revenue_at_risk_share:.1f}%** of revenue in current filters.")
+
+            st.divider()
+
+            st.markdown("### Distribution of churn risk (%)")
+
             fig = px.histogram(
                 segments_scored,
-                x="churn_probability",
+                x="churn_probability_pct",
                 nbins=20,
                 title="Distribution of churn risk",
-                labels={"churn_probability": "Churn risk (0–1)"},
+                labels={"churn_probability_pct": "Churn risk (%)"},
             )
+            fig.update_layout(xaxis_tickformat=".0f")
             st.plotly_chart(fig, use_container_width=True)
 
-            st.subheader("Top customers to prioritize (sample)")
-            top_n = st.slider("How many customers?", 10, 200, 50, step=10)
-            top = segments_scored.sort_values(
-                "churn_probability", ascending=False
-            ).head(top_n)
+            st.divider()
+
+            st.markdown("### Top customers to prioritize (sample)")
+
+            top_n = st.slider("How many customers?", 10, 300, 50, step=10)
+            top = (
+                segments_scored.sort_values("churn_probability_pct", ascending=False)
+                .head(top_n)
+                .copy()
+            )
 
             display_cols = [
                 "customer_unique_id",
@@ -337,14 +397,14 @@ This dashboard answers 3 business questions:
                 "avg_order_value",
                 "avg_review_score",
                 "avg_delivery_days",
-                "churn_probability",
+                "churn_probability_pct",
             ]
+
             available_cols = [c for c in display_cols if c in top.columns]
             top_display = top[available_cols].copy()
-            if "churn_probability" in top_display.columns:
-                top_display["churn_probability"] = (
-                    top_display["churn_probability"] * 100
-                ).round(2)
+            if "churn_probability_pct" in top_display.columns:
+                top_display["churn_probability_pct"] = top_display["churn_probability_pct"].round(1)
+                top_display = top_display.rename(columns={"churn_probability_pct": "churn_probability_%"})
 
             st.dataframe(top_display, use_container_width=True)
 
@@ -359,7 +419,7 @@ This dashboard answers 3 business questions:
             st.error(
                 "Model artifacts not found or failed to load.\n\n"
                 "Local: run `python -m src.modeling.train_churn_model`\n"
-                "Cloud: ensure model artifacts are available or disable prediction in demo mode.\n\n"
+                "Cloud: ensure model artifacts are committed.\n\n"
                 f"Details: {e}"
             )
 
