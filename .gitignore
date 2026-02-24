@@ -221,3 +221,7 @@ data/raw/*.csv
 
 # Processed datasets
 data/processed/*.csv
+
+# Allow Streamlit theme config
+!.streamlit/
+!.streamlit/config.toml
