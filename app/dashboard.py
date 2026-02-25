@@ -34,16 +34,14 @@ LOGO_DARK_SVG = ASSETS_DIR / "logo-dark.svg"
 CURRENCY_CODE = "BRL"
 CURRENCY_SYMBOL = "R$"
 
-
 # -----------------------------
-# Page config (favicon real)
+# Page config
 # -----------------------------
 st.set_page_config(
     page_title="Customer Intelligence Dashboard",
     page_icon=str(FAVICON_PNG) if FAVICON_PNG.exists() else "📊",
     layout="wide",
 )
-
 
 # -----------------------------
 # i18n (ES/EN)
@@ -203,120 +201,54 @@ I18N = {
     },
 }
 
-
 # -----------------------------
-# CSS (pro + accesible + premium states)
+# CSS
 # -----------------------------
 def apply_css() -> None:
     st.markdown(
         """
 <style>
-/* Layout + spacing */
 .block-container { padding-top: 1.0rem; padding-bottom: 2.25rem; max-width: 1200px; }
 .section { margin-top: 0.6rem; margin-bottom: 0.9rem; }
-
-/* Sidebar */
 section[data-testid="stSidebar"] { border-right: 1px solid rgba(49,51,63,0.12); }
 section[data-testid="stSidebar"] .block-container { padding-top: 1.1rem; }
-
-/* Typography */
 h1, h2, h3 { letter-spacing: -0.02em; }
 .stCaption, small { color: rgba(49,51,63,0.72); }
 @media (prefers-color-scheme: dark) { .stCaption, small { color: rgba(255,255,255,0.72); } }
-
-/* Accessible focus ring */
 *:focus { outline: 3px solid rgba(0, 121, 191, 0.70) !important; outline-offset: 2px; }
-
-/* Content cards */
-.card {
-  border: 1px solid rgba(49,51,63,0.12);
-  border-radius: 16px;
-  padding: 0.9rem 1rem;
-  background: #ffffff;
-}
-@media (prefers-color-scheme: dark) {
-  .card { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.10); }
-}
-
-/* KPI cards */
-div[data-testid="stMetric"] {
-  padding: 0.95rem 1rem;
-  border: 1px solid rgba(49,51,63,0.12);
-  border-radius: 16px;
-  background: #ffffff;
-}
-@media (prefers-color-scheme: dark) {
-  div[data-testid="stMetric"] { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.10); }
-}
-
-/* Tabs */
+.card { border: 1px solid rgba(49,51,63,0.12); border-radius: 16px; padding: 0.9rem 1rem; background: #ffffff; }
+@media (prefers-color-scheme: dark) { .card { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.10); } }
+div[data-testid="stMetric"] { padding: 0.95rem 1rem; border: 1px solid rgba(49,51,63,0.12); border-radius: 16px; background: #ffffff; }
+@media (prefers-color-scheme: dark) { div[data-testid="stMetric"] { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.10); } }
 div[data-baseweb="tab-list"] { gap: 0.25rem; }
-div[data-baseweb="tab-list"] button {
-  font-weight: 650;
-  padding: 0.55rem 0.85rem;
-  border-radius: 12px;
-  transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
-}
+div[data-baseweb="tab-list"] button { font-weight: 650; padding: 0.55rem 0.85rem; border-radius: 12px; transition: transform .06s ease, background-color .12s ease, border-color .12s ease; }
 div[data-baseweb="tab-list"] button:hover { transform: translateY(-1px); }
 div[data-baseweb="tab-list"] button[aria-selected="true"] { border: 1px solid rgba(49,51,63,0.18); }
 div[data-baseweb="tab-panel"] { padding-top: 0.7rem; }
-
-/* Buttons */
-.stDownloadButton button, .stButton button {
-  border-radius: 12px !important;
-  min-height: 44px !important;
-  transition: transform .06s ease, box-shadow .12s ease;
-}
+.stDownloadButton button, .stButton button { border-radius: 12px !important; min-height: 44px !important; transition: transform .06s ease, box-shadow .12s ease; }
 .stDownloadButton button:hover, .stButton button:hover { transform: translateY(-1px); }
 .stDownloadButton button:active, .stButton button:active { transform: translateY(0px); }
-
-/* Tables */
-[data-testid="stDataFrame"] {
-  border: 1px solid rgba(49,51,63,0.12);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* Banner */
+[data-testid="stDataFrame"] { border: 1px solid rgba(49,51,63,0.12); border-radius: 16px; overflow: hidden; }
 [data-testid="stAppViewContainer"] .main { padding-top: 0.25rem; }
 .brand-banner img { border-radius: 16px; border: 1px solid rgba(49,51,63,0.12); }
-
-/* Badge */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid rgba(49,51,63,0.18);
-  background: rgba(255,255,255,0.90);
-  font-size: 0.85rem;
-}
-@media (prefers-color-scheme: dark) {
-  .badge { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.12); }
-}
-
-/* Emphasis (not only color: icons + label) */
+.badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.55rem; border-radius: 999px; border: 1px solid rgba(49,51,63,0.18); background: rgba(255,255,255,0.90); font-size: 0.85rem; }
+@media (prefers-color-scheme: dark) { .badge { background: rgba(20,20,25,0.55); border: 1px solid rgba(255,255,255,0.12); } }
 .emph-risk { border-color: rgba(220, 38, 38, 0.25) !important; }
 .emph-uplift { border-color: rgba(22, 163, 74, 0.25) !important; }
-
 .hint { font-size: 0.92rem; opacity: 0.92; }
 </style>
         """,
         unsafe_allow_html=True,
     )
 
-
 # -----------------------------
 # Helpers
 # -----------------------------
 def brl(x: float) -> str:
-    """Format BRL with R$ prefix for UI."""
     try:
         return f"{CURRENCY_SYMBOL} {float(x):,.0f}"
     except Exception:
         return "—"
-
 
 def pct(x: float, decimals: int = 1) -> str:
     try:
@@ -324,11 +256,15 @@ def pct(x: float, decimals: int = 1) -> str:
     except Exception:
         return "—"
 
-
 def last_updated(path: Path) -> str:
     ts = path.stat().st_mtime
     return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
 
+def parse_datetime_cols(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    for c in cols:
+        if c in df.columns:
+            df[c] = pd.to_datetime(df[c], errors="coerce")
+    return df
 
 def render_branding() -> None:
     if BANNER_SVG.exists():
@@ -341,7 +277,6 @@ def render_branding() -> None:
     if logo_path.exists():
         st.sidebar.image(str(logo_path), width=140)
 
-
 def card(title: str, body: str) -> None:
     st.markdown(
         f"""
@@ -353,21 +288,17 @@ def card(title: str, body: str) -> None:
         unsafe_allow_html=True,
     )
 
-
 def compute_suggested_threshold(pcts: pd.Series) -> int:
-    """Pick a threshold that yields a manageable list (70th percentile, snapped to 5)."""
     if pcts.empty:
         return 60
     q = float(pcts.quantile(0.70))
     snapped = int(round(q / 5) * 5)
     return max(10, min(95, snapped))
 
-
 def clamp_date_range(min_date, max_date):
     if pd.notna(min_date) and pd.notna(max_date):
         return (min_date.date(), max_date.date())
     return None
-
 
 # -----------------------------
 # Data loading
@@ -398,8 +329,23 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame, str, bool]:
         )
         st.stop()
 
-    if "order_purchase_timestamp" in tx.columns:
-        tx["order_purchase_timestamp"] = pd.to_datetime(tx["order_purchase_timestamp"], errors="coerce")
+    # Parse datetimes (pro hygiene)
+    tx = parse_datetime_cols(
+        tx,
+        [
+            "order_purchase_timestamp",
+            "order_approved_at",
+            "order_delivered_carrier_date",
+            "order_delivered_customer_date",
+            "order_estimated_delivery_date",
+        ],
+    )
+    segments = parse_datetime_cols(segments, ["last_purchase"])
+
+    # Ensure churn dtype is clean if it comes as 0/1 in some environments
+    if "churn_180d" in segments.columns:
+        if segments["churn_180d"].dtype != bool:
+            segments["churn_180d"] = segments["churn_180d"].astype(bool)
 
     required_seg_cols = {"customer_unique_id", "segment_name", "monetary_total"}
     required_tx_cols = {"order_id", "order_purchase_timestamp"}
@@ -412,16 +358,11 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame, str, bool]:
 
     return segments, tx, source, demo_mode
 
-
 def main() -> None:
     apply_css()
     render_branding()
 
-    # -----------------------------
-    # Preferences (persistent)
-    # -----------------------------
     LANG_LABEL_TO_CODE = {"English (EN)": "en", "Español (ES)": "es"}
-
     if "lang" not in st.session_state:
         st.session_state.lang = "es"
 
@@ -436,16 +377,12 @@ def main() -> None:
         help="Choose the language for the interface / Elige el idioma de la interfaz.",
     )
     st.session_state.lang = LANG_LABEL_TO_CODE[selected_label]
+    t = I18N[st.session_state.lang]
 
-    lang = st.session_state.lang
-    t = I18N[lang]
-
-    # Reset filters (pro UX)
     if st.sidebar.button(t["reset_filters"], type="secondary"):
         st.session_state.clear()
         st.rerun()
 
-    # Help (microcopy, no tech)
     with st.sidebar.expander(f"ℹ️ {t['help']}", expanded=False):
         st.write(f"**Churn proxy:** {t['help_text']['proxy']}")
         st.write(f"**Interpretation:** {t['help_text']['interpret']}")
@@ -453,7 +390,6 @@ def main() -> None:
 
     st.sidebar.divider()
 
-    # Badges
     st.markdown(
         f'<span class="badge">💱 {t["currency"]}: <b>{CURRENCY_CODE}</b> ({CURRENCY_SYMBOL})</span>',
         unsafe_allow_html=True,
@@ -469,14 +405,10 @@ def main() -> None:
     churn_cols = [c for c in segments.columns if c.startswith("churn_")]
     churn_col = churn_cols[0] if churn_cols else None
 
-    # Coverage
     min_date = tx["order_purchase_timestamp"].min()
     max_date = tx["order_purchase_timestamp"].max()
     days_span = int((max_date - min_date).days) if pd.notna(min_date) and pd.notna(max_date) else 0
 
-    # -----------------------------
-    # Filters (order: segment -> dates)
-    # -----------------------------
     st.sidebar.header(t["filters"])
     segment_options = [t["all"]] + sorted(segments["segment_name"].dropna().unique().tolist())
     selected_segment = st.sidebar.selectbox(t["segment"], segment_options)
@@ -491,7 +423,6 @@ def main() -> None:
             max_value=minmax[1],
         )
 
-    # Apply filters
     if selected_segment != t["all"]:
         segments_filtered = segments[segments["segment_name"] == selected_segment].copy()
     else:
@@ -504,7 +435,6 @@ def main() -> None:
             & (tx_filtered["order_purchase_timestamp"].dt.date <= date_range[1])
         ].copy()
 
-    # Active filters summary (UX)
     seg_label = selected_segment
     date_label = f"{date_range[0]} → {date_range[1]}" if date_range else "—"
     st.markdown(
@@ -512,9 +442,6 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    # -----------------------------
-    # KPIs (consistent)
-    # -----------------------------
     total_customers = int(segments_filtered.shape[0])
     total_orders = int(tx_filtered["order_id"].nunique())
     total_revenue = float(segments_filtered["monetary_total"].sum())
@@ -545,9 +472,6 @@ def main() -> None:
 
     tab1, tab2, tab3, tab4 = st.tabs(t["tabs"])
 
-    # -----------------------------
-    # Tab 1: Executive (5-sec story)
-    # -----------------------------
     with tab1:
         st.markdown("\n".join([f"- {b}" for b in t["exec_bullets"]]))
 
@@ -582,12 +506,8 @@ def main() -> None:
         fig.update_yaxes(tickprefix=f"{CURRENCY_SYMBOL} ", tickformat=",.0f")
         st.plotly_chart(fig, width="stretch")
 
-    # -----------------------------
-    # Tab 2: Segments (decision table)
-    # -----------------------------
     with tab2:
         st.subheader(t["seg_dist"])
-
         seg_counts = segments_filtered["segment_name"].value_counts().reset_index()
         seg_counts.columns = ["segment_name", "customers"]
 
@@ -626,13 +546,11 @@ def main() -> None:
         display = summary.reset_index().rename(columns={"segment_name": "segment"}).copy()
         cols = ["segment", "customers", "revenue"] + (["churn_risk_%"] if "churn_risk_%" in display.columns else [])
         display = display[cols]
-
         display["revenue"] = display["revenue"].map(brl)
         if "churn_risk_%" in display.columns:
             display["churn_risk_%"] = display["churn_risk_%"].map(lambda x: pct(x, 1))
 
         st.dataframe(display, width="stretch", hide_index=True)
-
         st.download_button(
             t["download_seg"],
             data=summary.reset_index().to_csv(index=False).encode("utf-8"),
@@ -640,9 +558,6 @@ def main() -> None:
             mime="text/csv",
         )
 
-    # -----------------------------
-    # Tab 3: Predict (product-feel)
-    # -----------------------------
     with tab3:
         st.subheader(t["tabs"][2])
         st.write(t["predict_intro"])
@@ -777,18 +692,12 @@ def main() -> None:
                 f"Details: {e}"
             )
 
-    # -----------------------------
-    # Tab 4: Method (scannable bullets)
-    # -----------------------------
     with tab4:
         st.subheader(t["method_title"])
-
         st.markdown("**Key points**")
         st.markdown("\n".join([f"- {b}" for b in t["method_bullets"]]))
-
         st.markdown("**Limitations**")
         st.markdown("\n".join([f"- {b}" for b in t["limitations"]]))
-
 
 if __name__ == "__main__":
     main()
